@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour
 
     private bool isBench = false;
     private PlayerInfo playerInfo;
+    private GameSave gameSave;
+    private Transform bench;
 
     private void Awake()
     {
@@ -38,6 +40,9 @@ public class PlayerController : MonoBehaviour
         animator = transform.GetComponent<Animator>();
         raycast = transform.GetComponent<Raycast>();
         playerInfo = transform.GetComponent<PlayerInfo>();
+
+        gameSave = GameObject.FindGameObjectWithTag("SceneLoader").transform.GetComponent<GameSave>();
+
         PlayerPrefs.SetString("Hornet", "Off");
     }
 
@@ -77,7 +82,10 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.UpArrow) && isBench)
         {
             animator.SetTrigger("Sit");
-            playerInfo.getGameData(isBench);
+            playerInfo.playerX = bench.position.x;
+            playerInfo.playerY = bench.position.y;
+            playerInfo.GetGameData(isBench);
+            gameSave.Save();
         }
     }
 
@@ -144,7 +152,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.A) && !isJump)
         { // Focus
-            if (PlayerPrefs.GetInt("PlayerGauge") > 0)
+            if (playerInfo.playerGauge > 0)
             {
                 holdTimer += Time.deltaTime;
 
@@ -162,7 +170,7 @@ public class PlayerController : MonoBehaviour
                     isSlash = false;
                     holdTimer = 0;
                     playerInfo.PlayerGaugeInfo(Skill.Focus);
-                    if (!PlayerPrefs.GetInt("PlayerHp").Equals(5))
+                    if (playerInfo.playerHp != 5)
                     {
                         playerInfo.PlayerHpInfo(1, false);
                     }
@@ -219,6 +227,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Bench"))
         {
             isBench = true;
+            bench = collision.gameObject.transform;
         }
 
         if (collision.gameObject.CompareTag("Area"))

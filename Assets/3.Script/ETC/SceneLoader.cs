@@ -25,8 +25,13 @@ public class SceneLoader : MonoBehaviour
         }
 
         gameLoad = transform.GetComponent<GameLoad>();
-        gameData = gameLoad.Load("save.json");
+        gameData = new GameData();
         loadingPanel = GameObject.Find("Canvas").transform.Find("Loading").gameObject;
+    }
+
+    private void Start()
+    {
+        gameData = gameLoad.Load("save.json");
     }
 
     public void StartButton()
@@ -64,7 +69,6 @@ public class SceneLoader : MonoBehaviour
     public void DeadLodingFalse()
     {
         loadingPanel.SetActive(false);
-        SceneManager.LoadScene(gameData.sceneName);
     }
 
     public void ExitGame()

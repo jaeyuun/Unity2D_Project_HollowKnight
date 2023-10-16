@@ -18,19 +18,23 @@ public class UIController : MonoBehaviour
     private int playerGauge;
     private int playerMoney;
     private bool playerDead;
+    private GameLoad gameLoad;
+    private GameData gameData;
     private PlayerInfo playerInfo;
 
     private void Awake()
     {
         playerInfo = GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerInfo>();
-        playerHp = playerInfo.playerHp;
-        playerMoney = playerInfo.playerMoney;
-        playerGauge = playerInfo.playerGauge;
-        playerDead = playerInfo.playerDead;
+        gameLoad = GameObject.FindGameObjectWithTag("SceneLoader").transform.GetComponent<GameLoad>();
+        gameData = new GameData();
     }
 
     private void Start()
     {
+        playerHp = gameData.playerHp;
+        playerMoney = gameData.playerMoney;
+        playerGauge = gameData.playerGauge;
+        playerDead = gameData.playerDead;
         SetStartUI();
     }
 
@@ -49,8 +53,14 @@ public class UIController : MonoBehaviour
         for (int i = playerHp; i < hp.Length; i++)
         {
             hpAnimator = hp[i].transform.GetComponent<Animator>();
-            hpAnimator.Play("Hp_no");
+            hpAnimator.Play("Hp_No");
         }
+        for (int i = 0; i < playerHp; i++)
+        {
+            hpAnimator = hp[i].transform.GetComponent<Animator>();
+            hpAnimator.Play("Hp");
+        }
+
         // Geo
         geoText.text = playerMoney.ToString();
         // Gauge

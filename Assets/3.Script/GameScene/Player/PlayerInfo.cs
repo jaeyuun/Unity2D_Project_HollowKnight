@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerInfo : MonoBehaviour
 {
+    private GameLoad gameLoad;
     private GameData gameData;
 
     public int playerHp;
@@ -24,7 +25,8 @@ public class PlayerInfo : MonoBehaviour
 
     private void Awake()
     {
-        gameData = new GameData();
+        gameLoad = GameObject.FindGameObjectWithTag("SceneLoader").transform.GetComponent<GameLoad>();
+        gameData = gameLoad.Load("save");
 
         playerX = gameData.playerX;
         playerY = gameData.playerY;
@@ -45,7 +47,7 @@ public class PlayerInfo : MonoBehaviour
         transform.position = playerTransform;
     }
 
-    public GameData getGameData(bool isBench = true)
+    public GameData GetGameData(bool isBench = true)
     {
         gameData.playerHp = playerHp;
         gameData.playerGauge = playerGauge;
@@ -55,6 +57,7 @@ public class PlayerInfo : MonoBehaviour
 
         if (isBench)
         {
+            Debug.Log("PlayerBench");
             gameData.playerX = playerX;
             gameData.playerY = playerY;
         }

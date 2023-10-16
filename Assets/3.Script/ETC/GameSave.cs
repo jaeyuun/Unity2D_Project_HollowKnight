@@ -2,16 +2,16 @@ using System.IO; // 입출력
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Newtonsoft.Json; // 가져오는 것
 
 public class GameSave : MonoBehaviour
 {
-    private PlayerInfo playerInfo;
+    [SerializeField] private PlayerInfo playerInfo;
 
     private void Awake()
     {
-        if (GameObject.FindGameObjectWithTag("Player") != null)
+        if (GameObject.FindGameObjectWithTag("Player"))
         {
             playerInfo = GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerInfo>();
         }
@@ -19,14 +19,12 @@ public class GameSave : MonoBehaviour
 
     public void Save(bool exFile = true)
     {
-        GameData data;
+        GameData data = new GameData();
         if (exFile)
         {
-            data = playerInfo.getGameData();
-        } else
-        {
-            data = new GameData();
+            data = playerInfo.GetGameData(); 
         }
+
         string fileName = "save";
 
         if (!fileName.Contains(".json"))
