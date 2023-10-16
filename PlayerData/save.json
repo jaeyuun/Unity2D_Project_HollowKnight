@@ -1,0 +1,10 @@
+{
+  "playerHp": 5,
+  "playerGauge": 0,
+  "playerMoney": 0,
+  "playerPower": 5,
+  "playerDead": false,
+  "sceneName": "GameScene",
+  "playerX": -2.0,
+  "playerY": 2.0
+}

@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerTakeDamage : MonoBehaviour
 {
     [SerializeField] private GameObject stunEffect;
+    private PlayerInfo playerInfo;
     private Animator animator;
     private bool isHurt = false;
     private float timer = 0;
@@ -12,6 +13,7 @@ public class PlayerTakeDamage : MonoBehaviour
     private void Awake()
     {
         animator = transform.GetComponent<Animator>();
+        playerInfo = transform.GetComponent<PlayerInfo>();
     }
 
     private void Update()
@@ -35,7 +37,7 @@ public class PlayerTakeDamage : MonoBehaviour
 
     private void PlayerHurt()
     {
-        PlayerInfo.PlayerHpInfo();
+        playerInfo.PlayerHpInfo();
         animator.SetBool("Stun", true);
         stunEffect.SetActive(true);
         gameObject.transform.GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.5f, 0.5f, 1f);

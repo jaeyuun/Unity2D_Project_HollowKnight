@@ -30,14 +30,14 @@ public class PlayerController : MonoBehaviour
     private float holdTimer = 0; // key press timer
 
     private bool isBench = false;
-    private BenchSave benchSave;
+    private PlayerInfo playerInfo;
 
     private void Awake()
     {
-        transform.position = new Vector2(PlayerPrefs.GetFloat("BenchPosX"), PlayerPrefs.GetFloat("BenchPosY"));
         movement2D = transform.GetComponent<Movement2D>();
         animator = transform.GetComponent<Animator>();
         raycast = transform.GetComponent<Raycast>();
+        playerInfo = transform.GetComponent<PlayerInfo>();
         PlayerPrefs.SetString("Hornet", "Off");
     }
 
@@ -67,13 +67,17 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.LeftArrow) || Input.GetKeyUp(KeyCode.RightArrow))
         {
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Sitting_Asleep"))
+            {
+                animator.SetTrigger("Idle");
+            }
             animator.SetBool("Run", false);
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow) && isBench)
         {
-            Debug.Log("Save");
-            benchSave.Save();
+            animator.SetTrigger("Sit");
+            playerInfo.getGameData(isBench);
         }
     }
 
@@ -157,10 +161,10 @@ public class PlayerController : MonoBehaviour
                     skillEffect[(int)Skill.Focus].SetActive(false);
                     isSlash = false;
                     holdTimer = 0;
-                    PlayerInfo.PlayerGaugeInfo(Skill.Focus);
+                    playerInfo.PlayerGaugeInfo(Skill.Focus);
                     if (!PlayerPrefs.GetInt("PlayerHp").Equals(5))
                     {
-                        PlayerInfo.PlayerHpInfo(1, false);
+                        playerInfo.PlayerHpInfo(1, false);
                     }
                 }
             }
@@ -214,12 +218,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bench"))
         {
-            benchSave = collision.gameObject.transform.GetComponent<BenchSave>();
             isBench = true;
-            if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                animator.SetTrigger("Idle");
-            }
         }
 
         if (collision.gameObject.CompareTag("Area"))

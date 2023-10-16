@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - Bench
   - Area
+  - SceneLoader
   layers:
   - Default
   - TransparentFX

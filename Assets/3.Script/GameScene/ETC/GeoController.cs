@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GeoController : MonoBehaviour
 {
+    PlayerInfo playerInfo;
     [SerializeField] private int price; // 1, 5, 25
     private Animator animator;
     private bool isGet = false;
@@ -29,9 +30,10 @@ public class GeoController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            playerInfo = collision.gameObject.transform.GetComponent<PlayerInfo>();
             if (!isGet)
             {
-                PlayerInfo.PlayerMoneyInfo(price, false);
+                playerInfo.PlayerMoneyInfo(price, false);
                 StartCoroutine(GeoDestroy_Co());
                 isGet = true;
             }

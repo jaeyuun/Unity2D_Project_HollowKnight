@@ -17,62 +17,120 @@ public class UIController : MonoBehaviour
     private int playerHp;
     private int playerGauge;
     private int playerMoney;
-    private int playerDead;
+    private bool playerDead;
+    private PlayerInfo playerInfo;
+
+    private void Awake()
+    {
+        playerInfo = GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerInfo>();
+        playerHp = playerInfo.playerHp;
+        playerMoney = playerInfo.playerMoney;
+        playerGauge = playerInfo.playerGauge;
+        playerDead = playerInfo.playerDead;
+    }
 
     private void Start()
     {
-        playerHp = PlayerPrefs.GetInt("PlayerHp");
-        playerMoney = PlayerPrefs.GetInt("PlayerMoney");
-        playerGauge = PlayerPrefs.GetInt("PlayerGauge");
-        playerDead = PlayerPrefs.GetInt("PlayerDead");
+        SetStartUI();
     }
 
     private void Update()
     {
         // 플레이어에 저장된 값이 바뀌었을 때
-        if (playerHp != PlayerPrefs.GetInt("PlayerHp") && PlayerPrefs.GetInt("PlayerHp") >= 0)
+        UIHpSet();
+        UIGaugeSoulSet();
+        UIGeoSet();
+        UIGaugeSoulOnOff();
+    }
+
+    private void SetStartUI()
+    {
+        // Hp
+        for (int i = playerHp; i < hp.Length; i++)
         {
-            UIHpSet();
+            hpAnimator = hp[i].transform.GetComponent<Animator>();
+            hpAnimator.Play("Hp_no");
         }
-        if (playerGauge != PlayerPrefs.GetInt("PlayerGauge"))
+        // Geo
+        geoText.text = playerMoney.ToString();
+        // Gauge
+        gaugeAnimator = gaugeSoul[1].transform.GetComponent<Animator>();
+        if (playerGauge <= 0)
         {
-            UIGaugeSoulSet();
+            gaugeSoul[1].SetActive(false);
         }
-        if (playerMoney != PlayerPrefs.GetInt("PlayerMoney"))
+        else
         {
-            UIGeoSet();
+            gaugeSoul[1].SetActive(true);
         }
-        if (playerDead != PlayerPrefs.GetInt("PlayerDead"))
+
+        // eyesImage setActive
+        if (playerGauge < 2)
         {
-            UIGaugeSoulOnOff();
+            eyeImage.SetActive(false);
+        }
+        else
+        {
+            eyeImage.SetActive(true);
+        }
+
+        // full soul
+        if (playerGauge == 4)
+        {
+            gaugeSoul[2].SetActive(true);
+        }
+        else
+        {
+            gaugeSoul[2].SetActive(false);
+        }
+
+        switch (playerGauge)
+        {
+            case 1:
+                gaugeAnimator.Play("GaugeSmall");
+                break;
+            case 2:
+                gaugeAnimator.Play("GaugeMiddle");
+                break;
+            case 3:
+            case 4:
+                gaugeAnimator.Play("GaugeMiddle");
+                break;
         }
     }
 
     private void UIHpSet()
     {
-        bool isHurt = ((playerHp - PlayerPrefs.GetInt("PlayerHp")) >= 0) ? true : false; // 0보다 작으면 회복, 아니라면 다침
-        string animeName = string.Empty;
-        playerHp = PlayerPrefs.GetInt("PlayerHp");
-        if (isHurt)
+        if (playerHp != playerInfo.playerHp && playerInfo.playerHp >= 0)
         {
-            animeName = "Hurt";
-            HpAnimation(playerHp, animeName);
-        } else
-        {
-            animeName = "Recovery";
-            HpAnimation(playerHp - 1, animeName);
+            bool isHurt = (playerHp - playerInfo.playerHp) >= 0; // 0보다 작으면 회복, 아니라면 다침
+            string animeName = string.Empty;
+            playerHp = playerInfo.playerHp;
+            if (isHurt)
+            {
+                animeName = "Hurt";
+                HpAnimation(playerHp, animeName);
+            }
+            else
+            {
+                animeName = "Recovery";
+                HpAnimation(playerHp - 1, animeName);
+            }
         }
     }
 
     private void UIGeoSet()
     {
-        int geo = PlayerPrefs.GetInt("PlayerMoney");
-        geoText.text = (geo < 1000) ? $"{geo}" : $"{geo % 1000},{geo / 1000}";
+        if (playerMoney != playerInfo.playerMoney)
+        {
+            int geo = playerInfo.playerMoney;
+            geoText.text = geo < 1000 ? $"{geo}" : $"{geo % 1000},{geo / 1000}";
+        }
     }
 
     private void UIGaugeSoulOnOff()
     {
-        if (PlayerPrefs.GetInt("PlayerDead").Equals(0))
+        if (!playerDead)
         { // 까만영혼이 존재하지 않을 때
             GaugeAnimation(0, "SoulOn");
         }
@@ -84,58 +142,64 @@ public class UIController : MonoBehaviour
 
     private void UIGaugeSoulSet()
     {
-        int gauge = PlayerPrefs.GetInt("PlayerGauge");
-        bool isUsed = ((playerGauge - PlayerPrefs.GetInt("PlayerGauge")) >= 0) ? true : false; // 0보다 작으면 충전, 아니라면 사용
-        // 죽고나서 영혼을 못얻었을 때 gaugeSoul[0]의 애니메이션 추가해주기... todo
-        // soul gauge
-        playerGauge = PlayerPrefs.GetInt("PlayerGauge");
+        if (playerGauge != playerInfo.playerGauge)
+        {
+            Debug.Log(playerGauge);
+            Debug.Log(playerInfo.playerGauge);
+            bool isUsed = (playerGauge - playerInfo.playerGauge) >= 0; // 0보다 작으면 충전, 아니라면 사용
+            // 죽고나서 영혼을 못얻었을 때 gaugeSoul[0]의 애니메이션 추가해주기... todo
+            playerGauge = playerInfo.playerGauge;
 
-        if (playerGauge <= 0)
-        {
-            gaugeSoul[1].SetActive(false);
-        } else
-        {
-            gaugeSoul[1].SetActive(true);
-        }
-
-        // eyesImage setActive
-        if (gauge < 2)
-        {
-            eyeImage.SetActive(false);
-        } else
-        {
-            eyeImage.SetActive(true);
-        }
-
-        // full soul
-        if (gauge == 4)
-        {
-            gaugeSoul[2].SetActive(true);
-        } else
-        {
-            gaugeSoul[2].SetActive(false);
-        }
-
-        string animeName = string.Empty;
-        int slashAttack = PlayerPrefs.GetInt("SlashAttack"); // UIController에서 사용할 프리팹, 사용하고 나서는 0으로 바꿔주기
-        if (slashAttack == 1)
-        { // 슬래시로 공격했을 때
-            PlayerPrefs.SetInt("SlashAttack", 0);
-             if (gauge != 1)
+            if (playerGauge <= 0)
             {
-                GaugeAnimation(1, "Attack");
+                gaugeSoul[1].SetActive(false);
             }
-        }
-        // 포커스 스킬을 사용했을 때
-        if (isUsed)
-        {
-            animeName = "UsedSoul";
-            GaugeAnimation(1, animeName);
-        }
-        else
-        {
-            animeName = "NextSoul";
-            GaugeAnimation(1, animeName);
+            else
+            {
+                gaugeSoul[1].SetActive(true);
+            }
+
+            // eyesImage setActive
+            if (playerGauge < 2)
+            {
+                eyeImage.SetActive(false);
+            }
+            else
+            {
+                eyeImage.SetActive(true);
+            }
+
+            // full soul
+            if (playerGauge == 4)
+            {
+                gaugeSoul[2].SetActive(true);
+            }
+            else
+            {
+                gaugeSoul[2].SetActive(false);
+            }
+
+            string animeName = string.Empty;
+            int slashAttack = PlayerPrefs.GetInt("SlashAttack"); // UIController에서 사용할 프리팹, 사용하고 나서는 0으로 바꿔주기
+            if (slashAttack == 1)
+            { // 슬래시로 공격했을 때
+                PlayerPrefs.SetInt("SlashAttack", 0);
+                if (playerGauge != 1)
+                {
+                    GaugeAnimation(1, "Attack");
+                }
+            }
+            // 포커스 스킬을 사용했을 때
+            if (isUsed)
+            {
+                animeName = "UsedSoul";
+                GaugeAnimation(1, animeName);
+            }
+            else
+            {
+                animeName = "NextSoul";
+                GaugeAnimation(1, animeName);
+            }
         }
     }
 
@@ -160,6 +224,4 @@ public class UIController : MonoBehaviour
         gaugeAnimator = gaugeSoul[i].transform.GetComponent<Animator>();
         gaugeAnimator.SetTrigger($"{animeName}");
     }
-
-    // 비동기 로딩씬 추가... todo, Load와 Save때 활용
 }

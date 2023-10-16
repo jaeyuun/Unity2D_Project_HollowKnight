@@ -1,65 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInfo : MonoBehaviour
 {
-    [Header("테스트 시 체크")]
-    public bool isTest; // 삭제할 것... todo
+    private GameData gameData;
 
     public int playerHp;
     public int playerGauge;
     public int playerMoney;
     public int playerPower;
-    public int playerDead;
+    public bool playerDead;
+    
+    public float playerX;
+    public float playerY;
+    public string sceneName;
+
+    public Vector2 playerTransform;
 
     public int[] playerSkill; // 스킬 얻었는지 아닌지 확인하는 변수, 0이면 없는 것 1이면 있는 것
     private int playerSkillCount = 1; // 스킬의 총 개수
 
     private void Awake()
     {
-        if (!PlayerPrefs.HasKey("PlayerHp"))
-        {
-            PlayerPrefs.SetInt("PlayerHp", 5);
-        }
-        if (!PlayerPrefs.HasKey("PlayerGauge"))
-        {
-            PlayerPrefs.SetInt("PlayerGauge", 0);
-        }
-        if (!PlayerPrefs.HasKey("PlayerMoney"))
-        {
-            PlayerPrefs.SetInt("PlayerMoney", 0);
-        }
-        if (!PlayerPrefs.HasKey("PlayerPower"))
-        {
-            PlayerPrefs.SetInt("PlayerPower", 5);
-        }
-        if (!PlayerPrefs.HasKey("PlayerDead"))
-        {
-            PlayerPrefs.SetInt("PlayerDead", 0); // false 0, true 1
-        }
+        gameData = new GameData();
 
-        // 삭제할 것... todo
-        PlayerPrefs.SetInt("PlayerHp", 5);
-        PlayerPrefs.SetInt("PlayerGauge", 0);
-        PlayerPrefs.SetInt("PlayerMoney", 0);
-        PlayerPrefs.SetInt("PlayerPower", 5);
+        playerX = gameData.playerX;
+        playerY = gameData.playerY;
+        sceneName = gameData.sceneName;
 
-        playerHp = PlayerPrefs.GetInt("PlayerHp");
-        playerGauge = PlayerPrefs.GetInt("PlayerGauge");
-        playerMoney = PlayerPrefs.GetInt("PlayerMoney");
-        playerPower = PlayerPrefs.GetInt("PlayerPower");
-        playerDead = PlayerPrefs.GetInt("PlayerDead");
+        playerHp = gameData.playerHp;
+        playerGauge = gameData.playerGauge;
+        playerMoney = gameData.playerMoney;
+        playerPower = gameData.playerPower;
+        playerDead = gameData.playerDead;
 
         for (int i = 0; i < playerSkillCount; i++)
         {
             playerSkill[i] = new int();
         }
+
+        playerTransform = new Vector2(playerX, playerY);
+        transform.position = playerTransform;
     }
 
-    public static void PlayerHpInfo(int skillPower = 1, bool isMinus = true)
+    public GameData getGameData(bool isBench = true)
     {
-        int playerHp = PlayerPrefs.GetInt("PlayerHp");
+        gameData.playerHp = playerHp;
+        gameData.playerGauge = playerGauge;
+        gameData.playerMoney = playerMoney;
+        gameData.playerPower = playerPower;
+        gameData.playerDead = playerDead;
+
+        if (isBench)
+        {
+            gameData.playerX = playerX;
+            gameData.playerY = playerY;
+        }
+        gameData.sceneName = sceneName;
+
+        return gameData;
+    }
+
+    public void PlayerHpInfo(int skillPower = 1, bool isMinus = true)
+    {
         if (isMinus)
         {
             playerHp -= skillPower;
@@ -67,12 +72,10 @@ public class PlayerInfo : MonoBehaviour
         {
             playerHp += skillPower;
         }
-        PlayerPrefs.SetInt("PlayerHp", playerHp);
     }
 
-    public static void PlayerGaugeInfo(Skill skillName)
+    public void PlayerGaugeInfo(Skill skillName)
     { // Enemy를 hit했을 때만
-        int playerGauge = PlayerPrefs.GetInt("PlayerGauge");
         switch (skillName)
         {
             case Skill.Slash:
@@ -87,30 +90,26 @@ public class PlayerInfo : MonoBehaviour
         }
 
         int maxGauge;
-        if (PlayerPrefs.GetInt("PlayerDead").Equals(0))
+        if (playerDead)
         { // 까만 영혼이 존재하지 않을 때
             maxGauge = 4;
         }
         else { // 까만 영혼이 존재할 때
             maxGauge = 3;
         }
+
         if (playerGauge > maxGauge)
         {
-            PlayerPrefs.SetInt("PlayerGauge", maxGauge);
+            playerGauge = maxGauge;
         }
         else if (playerGauge < 0)
         {
-            PlayerPrefs.SetInt("PlayerGauge", 0);
-        }
-        else
-        {
-            PlayerPrefs.SetInt("PlayerGauge", playerGauge);
+            playerGauge = 0;
         }
     }
 
-    public static void PlayerMoneyInfo(int geo, bool isMinus = true)
+    public void PlayerMoneyInfo(int geo, bool isMinus = true)
     {
-        int playerMoney = PlayerPrefs.GetInt("PlayerMoney");
         if (isMinus)
         {
             playerMoney -= geo;
@@ -118,6 +117,5 @@ public class PlayerInfo : MonoBehaviour
         {
             playerMoney += geo;
         }
-        PlayerPrefs.SetInt("PlayerMoney", playerMoney);
     }
 }

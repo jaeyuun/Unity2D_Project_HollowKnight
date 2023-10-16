@@ -4,7 +4,13 @@ using UnityEngine;
 
 public class EnemyHp : MonoBehaviour
 {
+    private PlayerInfo playerInfo;
     public int enemyHp;
+
+    private void Awake()
+    {
+        playerInfo = GameObject.FindGameObjectWithTag("Player").transform.GetComponent<PlayerInfo>();
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -16,9 +22,9 @@ public class EnemyHp : MonoBehaviour
                 case "SlashAlt":
                 case "UpSlash":
                 case "DownSlash":
-                    enemyHp -= PlayerPrefs.GetInt("PlayerPower");
+                    enemyHp -= playerInfo.playerPower;
+                    playerInfo.PlayerGaugeInfo(Skill.Slash);
                     PlayerPrefs.SetInt("SlashAttack", 1); // UIController에서 사용할 프리팹
-                    PlayerInfo.PlayerGaugeInfo(Skill.Slash);
                     break;
             }
         }
