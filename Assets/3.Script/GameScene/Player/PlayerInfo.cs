@@ -57,7 +57,6 @@ public class PlayerInfo : MonoBehaviour
 
         if (isBench)
         {
-            Debug.Log("PlayerBench");
             gameData.playerX = playerX;
             gameData.playerY = playerY;
         }

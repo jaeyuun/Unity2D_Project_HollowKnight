@@ -25,8 +25,8 @@ public class PlayerDead : MonoBehaviour
         if (playerInfo.playerHp == 0)
         {
             playerInfo.playerDead = false; // 플레이어의 까만 영혼이 존재함
-            playerInfo.GetGameData(false);
             StartCoroutine(DeadAnimation_Co());
+            playerInfo.GetGameData(false);
         }
     }
 

@@ -6,13 +6,8 @@ using Newtonsoft.Json;
 
 public class GameLoad : MonoBehaviour
 {
-    private GameSave gameSave;
+    [SerializeField] private GameSave gameSave;
     public GameData gameData;
-
-    private void Awake()
-    {
-        gameSave = transform.GetComponent<GameSave>();
-    }
 
     public GameData Load(string fileName)
     {

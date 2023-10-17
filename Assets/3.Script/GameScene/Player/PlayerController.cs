@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
         raycast = transform.GetComponent<Raycast>();
         playerInfo = transform.GetComponent<PlayerInfo>();
 
-        gameSave = GameObject.FindGameObjectWithTag("SceneLoader").transform.GetComponent<GameSave>();
+        gameSave = GameObject.FindGameObjectWithTag("Save").transform.GetComponent<GameSave>();
 
         PlayerPrefs.SetString("Hornet", "Off");
     }

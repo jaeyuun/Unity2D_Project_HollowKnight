@@ -7,7 +7,7 @@ using Newtonsoft.Json; // 가져오는 것
 
 public class GameSave : MonoBehaviour
 {
-    [SerializeField] private PlayerInfo playerInfo;
+    private PlayerInfo playerInfo;
 
     private void Awake()
     {
